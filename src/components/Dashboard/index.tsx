@@ -37,7 +37,7 @@ import { FilterAttributeSearch } from './temp-filter';
 const mockPR: PullRequest[] = [
   {
     number: 0,
-    title: 'test0',
+    title: 'a-test',
     user: {
       login: 'test0'
     },
@@ -49,7 +49,7 @@ const mockPR: PullRequest[] = [
   },
   {
     number: 1,
-    title: 'test1',
+    title: 'b-test',
     user: {
       login: 'test1'
     },
@@ -61,7 +61,7 @@ const mockPR: PullRequest[] = [
   },
   {
     number: 2,
-    title: 'test2',
+    title: 'c-test',
     user: {
       login: 'test2'
     },
