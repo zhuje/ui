@@ -31,7 +31,8 @@ import { Modal, ModalVariant } from '@patternfly/react-core/dist/esm/components/
 import { useState } from 'react';
 import { Spinner } from '@patternfly/react-core/dist/esm/components/Spinner';
 
-import { TableSortableResponsive } from './PrTable';
+import { DashboardTable } from './PrTable';
+import { FilterAttributeSearch } from './temp-filter';
 
 const mockPR: PullRequest[] = [
   {
@@ -57,6 +58,18 @@ const mockPR: PullRequest[] = [
     created_at: '2024-10-10',
     updated_at: '2024-10-10',
     labels: [{ name: 'test' }, { name: 'hello' }, { name: 'world' }]
+  },
+  {
+    number: 2,
+    title: 'test2',
+    user: {
+      login: 'test2'
+    },
+    html_url: 'http://test.com/',
+    state: 'open',
+    created_at: '2024-10-11',
+    updated_at: '2024-10-11',
+    labels: [{ name: 'apple' }, { name: 'blueberry' }, { name: 'cherry' }]
   }
 ];
 
@@ -166,7 +179,6 @@ const Index: React.FunctionComponent = () => {
       </PageSection>
       <PageSection>
         <div style={{ marginBottom: '20px' }} />
-        <TableSortableResponsive />
         {/* {!isFirstPullDone && (
           <Modal variant={ModalVariant.small} title="Retrieving your submissions" isOpen={isLoading} onClose={() => handleOnClose()}>
             <div>
@@ -222,41 +234,46 @@ const Index: React.FunctionComponent = () => {
             </EmptyStateFooter>
           </EmptyState>
         ) : (
-          <Stack hasGutter>
-            {mockPR.map((pr) => (
-              <StackItem key={pr.number}>
-                <Card>
-                  <CardTitle>{pr.title}</CardTitle>
-                  <CardBody>
-                    <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
-                      <FlexItem>State: {pr.state}</FlexItem>
-                      <FlexItem>Created At: {new Date(pr.created_at).toLocaleString()}</FlexItem>
-                      <FlexItem>Updated At: {new Date(pr.updated_at).toLocaleString()}</FlexItem>
-                      <FlexItem>
-                        {pr.labels.map((label) => (
-                          <Label key={label.name} color="blue" style={{ marginRight: '5px' }}>
-                            {label.name}
-                          </Label>
-                        ))}
-                      </FlexItem>
-                      <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }} flex={{ default: 'flexNone' }}>
-                        <Button variant="secondary" component="a" href={pr.html_url} target="_blank" rel="noopener noreferrer">
-                          View PR
-                        </Button>
-                      </FlexItem>
-                      <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }} flex={{ default: 'flexNone' }}>
-                        {pr.state === 'open' && (
-                          <Button variant="primary" onClick={() => handleEditClick(pr)}>
-                            Edit
-                          </Button>
-                        )}
-                      </FlexItem>
-                    </Flex>
-                  </CardBody>
-                </Card>
-              </StackItem>
-            ))}
-          </Stack>
+          <div>
+            <DashboardTable rows={mockPR} />
+            <FilterAttributeSearch rows={mockPR} />
+          </div>
+
+          // <Stack hasGutter>
+          //   {mockPR.map((pr) => (
+          //     <StackItem key={pr.number}>
+          //       <Card>
+          //         <CardTitle>{pr.title}</CardTitle>
+          //         <CardBody>
+          //           <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }}>
+          //             <FlexItem>State: {pr.state}</FlexItem>
+          //             <FlexItem>Created At: {new Date(pr.created_at).toLocaleString()}</FlexItem>
+          //             <FlexItem>Updated At: {new Date(pr.updated_at).toLocaleString()}</FlexItem>
+          //             <FlexItem>
+          //               {pr.labels.map((label) => (
+          //                 <Label key={label.name} color="blue" style={{ marginRight: '5px' }}>
+          //                   {label.name}
+          //                 </Label>
+          //               ))}
+          //             </FlexItem>
+          //             <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }} flex={{ default: 'flexNone' }}>
+          //               <Button variant="secondary" component="a" href={pr.html_url} target="_blank" rel="noopener noreferrer">
+          //                 View PR
+          //               </Button>
+          //             </FlexItem>
+          //             <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }} flex={{ default: 'flexNone' }}>
+          //               {pr.state === 'open' && (
+          //                 <Button variant="primary" onClick={() => handleEditClick(pr)}>
+          //                   Edit
+          //                 </Button>
+          //               )}
+          //             </FlexItem>
+          //           </Flex>
+          //         </CardBody>
+          //       </Card>
+          //     </StackItem>
+          //   ))}
+          // </Stack>
         )}
       </PageSection>
     </div>

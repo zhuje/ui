@@ -2,21 +2,26 @@ import React from 'react';
 
 import { Card, Flex, FlexItem, Pagination, PaginationVariant, Label } from '@patternfly/react-core';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import CodeBranchIcon from '@patternfly/react-icons/dist/esm/icons/code-branch-icon';
-import CubeIcon from '@patternfly/react-icons/dist/esm/icons/cube-icon';
-import CodeIcon from '@patternfly/react-icons/dist/esm/icons/code-icon';
-import { columns, rows, SampleDataRow } from '@patternfly/react-table/dist/esm/demos/sampleData';
+
+// import { columns } from '@patternfly/react-table/dist/esm/demos/sampleData';
+import { PullRequest } from '@/types';
+import { useRouter } from 'next/navigation';
+import { Button } from '@patternfly/react-core/dist/dynamic/components/Button';
 
 type Direction = 'asc' | 'desc' | undefined;
 
-export const TableSortableResponsive: React.FunctionComponent = () => {
-  console.log({ rows });
-  console.log({ columns });
+interface DasboardTableProps {
+  rows: PullRequest[];
+}
 
+export const DashboardTable: React.FunctionComponent<DasboardTableProps> = ({ rows }) => {
   // Last two columns are placeholders that reserve space for the buttons 'View' and 'Edit'
-  //   const columns = ['Title', 'Status', 'Created', 'Updated', 'Labels', '', ''];
+  const columns = ['Title', 'Status', 'Created', 'Updated', 'Labels', '', ''];
 
-  const sortRows = (rows: SampleDataRow[], sortIndex: number, sortDirection: Direction) =>
+  //   console.log({ rows });
+  //   console.log({ columns });
+
+  const sortRows = (rows: PullRequest[], sortIndex: number, sortDirection: Direction) =>
     [...rows].sort((a, b) => {
       let returnValue = 0;
       if (sortIndex === 0 || sortIndex === 7) {
@@ -84,16 +89,29 @@ export const TableSortableResponsive: React.FunctionComponent = () => {
     />
   );
 
-  const renderLabel = (labelText: string) => {
-    switch (labelText) {
-      case 'Running':
-        return <Label color="green">{labelText}</Label>;
-      case 'Stopped':
-        return <Label color="orange">{labelText}</Label>;
-      case 'Needs Maintenance':
-        return <Label color="blue">{labelText}</Label>;
-      case 'Down':
-        return <Label color="red">{labelText}</Label>;
+  //   const renderLabel = (labelText: string) => {
+  //     switch (labelText) {
+  //       case 'Running':
+  //         return <Label color="green">{labelText}</Label>;
+  //       case 'Stopped':
+  //         return <Label color="orange">{labelText}</Label>;
+  //       case 'Needs Maintenance':
+  //         return <Label color="blue">{labelText}</Label>;
+  //       case 'Down':
+  //         return <Label color="red">{labelText}</Label>;
+  //     }
+  //   };
+
+  const router = useRouter();
+
+  const handleEditClick = (pr: PullRequest) => {
+    const hasKnowledgeLabel = pr.labels.some((label) => label.name === 'knowledge');
+    const hasSkillLabel = pr.labels.some((label) => label.name === 'skill');
+
+    if (hasKnowledgeLabel) {
+      router.push(`/edit-submission/knowledge/${pr.number}`);
+    } else if (hasSkillLabel) {
+      router.push(`/edit-submission/skill/${pr.number}`);
     }
   };
 
@@ -123,53 +141,62 @@ export const TableSortableResponsive: React.FunctionComponent = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {sortedRows.map((row, rowIndex) => (
-            <Tr key={rowIndex}>
+          {sortedRows.map((pr) => (
+            <Tr key={pr.number}>
               <>
+                {/* Title */}
                 <Td dataLabel={columns[0]} width={15}>
-                  <div>{row.name}</div>
+                  <div>{pr.title}</div>
                 </Td>
+                {/* Status */}
                 <Td dataLabel={columns[1]} width={10}>
                   <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                    <FlexItem>
-                      <CodeBranchIcon key="icon" />
-                    </FlexItem>
-                    <FlexItem>{row.threads}</FlexItem>
+                    <FlexItem>{pr.state}</FlexItem>
                   </Flex>
                 </Td>
+                {/* Created */}
                 <Td dataLabel={columns[2]} width={10}>
                   <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                    <FlexItem>
-                      <CodeIcon key="icon" />
-                    </FlexItem>
-                    <FlexItem>{row.applications}</FlexItem>
+                    <FlexItem>{pr.created_at}</FlexItem>
                   </Flex>
                 </Td>
+                {/* Updated */}
                 <Td dataLabel={columns[3]} width={10}>
                   <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                    <FlexItem>
-                      <CubeIcon key="icon" />
-                    </FlexItem>
-                    <FlexItem>{row.workspaces}</FlexItem>
+                    <FlexItem>{pr.updated_at}</FlexItem>
                   </Flex>
                 </Td>
+                {/* Labels */}
                 <Td dataLabel={columns[4]} width={15}>
                   <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                    <FlexItem>{renderLabel(row.status)}</FlexItem>
+                    <FlexItem>
+                      {pr.labels.map((label) => (
+                        <Label key={label.name} color="blue" style={{ marginRight: '5px' }}>
+                          {label.name}
+                        </Label>
+                      ))}
+                    </FlexItem>
                   </Flex>
                 </Td>
+                {/* View PR  */}
                 <Td dataLabel={columns[5]} width={10}>
                   <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                    <FlexItem>{row.location}</FlexItem>
+                    <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }} flex={{ default: 'flexNone' }}>
+                      <Button variant="secondary" component="a" href={pr.html_url} target="_blank" rel="noopener noreferrer">
+                        View PR
+                      </Button>
+                    </FlexItem>
                   </Flex>
                 </Td>
+                {/* Edit */}
                 <Td dataLabel={columns[6]} width={10}>
-                  <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                    <FlexItem>{row.lastModified[0]} days ago</FlexItem>
-                  </Flex>
-                </Td>
-                <Td dataLabel={columns[7]} modifier="truncate">
-                  <a href="#">{row.url}</a>
+                  <FlexItem alignSelf={{ default: 'alignSelfFlexEnd' }} flex={{ default: 'flexNone' }}>
+                    {pr.state === 'open' && (
+                      <Button variant="primary" onClick={() => handleEditClick(pr)}>
+                        Edit
+                      </Button>
+                    )}
+                  </FlexItem>
                 </Td>
               </>
             </Tr>
